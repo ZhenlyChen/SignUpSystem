@@ -1,0 +1,7 @@
+server/.jshintrc
+server/config/mongodb.json
+server/config/violet.json
+web/css/
+web/js/bootstrap-datetimepicker.min.js
+web/js/bootstrap-datetimepicker.zh-CN.js
+web/fonts/

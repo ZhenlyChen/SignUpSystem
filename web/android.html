@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content="#f8f8f8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>华农兵协训练预约系统</title>
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="favicon.ico">
+  <style type="text/css">
+    body {
+      padding-top: 50px;
+      background-color: #EEE;
+    }
+    
+    .input-group {
+      padding-top: 20px;
+    }
+    
+    .panel-title {
+      margin: 10px;
+      font-size: 22px;
+    }
+  </style>
+</head>
+
+<body>
+  <!--
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: #f8f8f8;">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+      <a class="navbar-brand" href="index.html">华农兵协训练预约系统</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right" style="padding-right: 30px;">
+        <li><a href="https://my.zhenly.cn/?sid=10001&args=">管理员登陆</a></li>
+      </ul>
+    </div>
+  </nav>-->
+  <ul class="nav nav-tabs" id="myTab" style="display: none;">
+    <li>
+      <a href="#mylistTable"></a>List</li>
+    <li>
+      <a href="#joinInDiv"></a>SignIn</li>
+  </ul>
+
+  <div class="container-fluid">
+    <div class="tab-content">
+      <div class="col-md-10 col-md-offset-1 active tab-pane fade in" id="mylistTable" role="tabpanel">
+        <div class="panel panel-success" v-for="(meeting, index) in meetings">
+          <div class="panel-heading">
+            <h2 class="panel-title">{{meeting.name}} <span :class="'label label-' + meeting.class">{{meeting.state}}</span></h2>
+          </div>
+          <div class="panel-body">
+            <p><i class="fa fa-calendar fa-fw" aria-hidden="true"></i> {{meeting.startDate}}</p>
+            <p><i class="fa fa-users fa-fw" aria-hidden="true"></i> 报名人数: {{meeting.actors}}</p>
+          </div>
+          <div class="panel-footer" style="text-align: right;" v-if="meeting.class == 'warning'">
+            <p style="margin-bottom: 0px;">报名截至: {{new Date(meeting.endDate).Format('yyyy-MM-dd hh:mm:ss')}}
+              <a href="#joinInDiv" aria-controls="loginDiv" role="tab" data-toggle="tab" style="margin-left: 10px;" class="btn btn-success" onclick="signIn(this)" :value="index">报名</a>
+            </p>
+          </div>
+        </div>
+        <div id="noActiveBox" class="panel panel-success" style="display: none;">
+          <div class="panel-body">
+            <h4>当前没有任何活动</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-10 col-md-offset-1 tab-pane fade in" id="joinInDiv" role="tabpanel">
+        <div class="panel panel-success">
+          <div class="panel-heading" style="font-size: 17px;">
+            <i href="#mylistTable" aria-controls="loginDiv" role="tab" data-toggle="tab" class="fa fa-arrow-left fa-fw" style="margin-right: 20px;"></i> 报名
+            <b id="activeName"></b>
+          </div>
+          <div class="panel-body">
+            <div id="notice"></div>
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
+                <input type="text" id="userName" class="form-control" placeholder="名字" aria-describedby="inputGroupSuccess1Status">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                <input type="text" id="userPhone" class="form-control" placeholder="手机" aria-describedby="inputGroupSuccess1Status">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-question"></i></span>
+                <input type="text" id="userWander" class="form-control" placeholder="" aria-describedby="inputGroupSuccess1Status">
+              </div>
+            </div>
+          </div>
+          <div style="text-align: right;padding: 3px 20px 20px 0px">
+            <button type="submit" class="btn btn-success btn-lg" onclick="postMan(this)" id="postBtn"><i class="fa fa-plus fa-fw"></i> 报名</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+<script src="js/mb.js"></script>
+<script type="text/javascript">
+  var list = new Vue({
+    el: '#mylistTable',
+    data: {
+      meetings: [{
+        id: 10000,
+        name: '日常训练',
+        class: 'warning',
+        state: '报名中',
+        endDate: '2017-9-1 11:22:00',
+        startDate: '2017-9-2 11:22:00',
+        text: '你想要训练些什么',
+        actors: 13,
+      }, {
+        id: 10001,
+        name: '球王争霸',
+        class: 'warning',
+        state: '报名中',
+        endDate: '2017-9-4 11:22:00',
+        startDate: '2017-9-5 11:22:00',
+        text: '你的梦想是什么',
+        actors: 13,
+      }, {
+        id: 10002,
+        name: '尧哥请吃饭',
+        class: 'danger',
+        state: '报名已截止',
+        endDate: '2017-7-4 11:22:00',
+        startDate: '2017-9-5 11:22:00',
+        text: '你的梦想是什么',
+        actors: 13,
+      }]
+    }
+  });
+  $(function() {
+    getList();
+  });
+
+  function postMan(e) {
+    if (isNullTest('userName', '请输入你的姓名')) return;
+    if (isNullTest('userPhone', '请输入你的电话')) return;
+    if (isNullTest('userWander', '请输入详细信息')) return;
+    var regular = /^1[34578]\d{9}$/;
+    if (!regularTest(regular, 'userPhone', '请输入合法的手机号码')) return;
+    $.post('/api/postMan', {
+      id: e.getAttribute('value'),
+      name: $('#userName').val(),
+      phone: $('#userPhone').val(),
+      text: $('#userWander').val(),
+    }, (data) => {
+      if (data.state == 'ok') {
+        getList();
+        $('#myTab a[href="#mylistTable"]').tab('show');
+      } else {
+        sendNotice('报名失败，请联系管理员');
+      }
+    });
+  }
+
+  function signIn(e) {
+    $('#activeName').html(list.meetings[e.getAttribute('value')].name);
+    $('#userWander').attr('placeholder', list.meetings[e.getAttribute('value')].text);
+    $('#postBtn').attr('value', list.meetings[e.getAttribute('value')].id);
+    $('#userName').val('');
+    $('#userPhone').val('');
+    $('#userWander').val('');
+  }
+
+  function getList() {
+    $.post('/api/getList', {}, (data) => {
+      list.meetings = data.meetings;
+      if (list.meetings == undefined) {
+        $('#noActiveBox').show();
+      } else {
+        $('#noActiveBox').hide();
+        var now = new Date();
+        now = now.getTime();
+        for (var i = 0; i < list.meetings.length; i++) {
+          var that = list.meetings[i].endDate;
+          that = new Date(that);
+          if (that > now) {
+            list.meetings[i].class = 'warning';
+            list.meetings[i].state = '报名中';
+          } else {
+            list.meetings[i].class = 'danger';
+            list.meetings[i].state = '已截止';
+          }
+        }
+      }
+    });
+  }
+</script>
+
+</html>

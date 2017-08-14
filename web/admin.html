@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme-color" content="#f8f8f8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>华农兵协训练预约</title>
+  <title>华农乒协训练预约</title>
   <!-- Bootstrap -->
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <link href="css/bootstrap-datetimepicker.min.css" rel="stylesheet">
@@ -38,7 +38,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-      <a class="navbar-brand" href="admin.html">华农兵协后台管理系统</a>
+      <a class="navbar-brand" href="admin.html">华农乒协后台管理系统</a>
     </div>
   </nav>
   <ul class="nav nav-tabs" id="myTab" style="display: none;">
@@ -63,7 +63,6 @@
               <label class="control-label">名称:</label>
               <input id="meetName" class="form-control" placeholder="请输入活动的名称">
             </div>
-
             <div class="form-group">
               <label class="control-label">报名截至时间：</label>
               <div class="input-group date form_datetime col-md-5" data-date-format="dd-MM-yyyy HH:ii:00" data-link-field="dtp_input1">
@@ -107,7 +106,7 @@
           </div>
           <div class="panel-body" style="padding: 10px;">
             <a class="btn btn-success btn-block" data-toggle="modal" data-target=".bs-example-modal-lg" onclick="cleanNew()">增加活动</a>
-            <a href="#mylistTable" role="tab" data-toggle="tab" class="btn btn-success btn-block">活动列表</a>
+            <a onclick="getList()" href="#mylistTable" role="tab" data-toggle="tab" class="btn btn-success btn-block">刷新列表</a>
             <a href="index.html" class="btn btn-warning btn-block">返回主页</a>
             <a onclick="logout()" class="btn btn-warning btn-block">退出登陆</a>
           </div>
@@ -122,7 +121,7 @@
           <div class="panel-body">
             <p><i class="fa fa-calendar fa-fw" aria-hidden="true"></i> 开始日期: {{meeting.startDate}}</p>
             <p><i class="fa fa-calendar fa-fw" aria-hidden="true"></i> 报名截至: {{new Date(meeting.endDate).Format('yyyy-MM-dd hh:mm:ss')}}</p>
-            <p><i class="fa fa-users fa-fw" aria-hidden="true"></i> 报名人数: {{meeting.peoples.length}}</p>
+            <p><i class="fa fa-users fa-fw" aria-hidden="true"></i> 报名人数: {{meeting.actors}}</p>
           </div>
           <div class="panel-footer" style="text-align: right;">
             <p style="margin-bottom: 0px;">
@@ -143,23 +142,33 @@
             <b id="activeName"></b>
           </div>
           <div class="panel-body">
-            <span style="font-size: 20px;margin-top: 30px;"><i class="fa fa-play fa-fw"></i> 活动信息</span>
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-user-o fa-fw"></i> 活动名字</span>
-                <input type="text" id="aName" class="form-control" placeholder="活动名字" aria-describedby="inputGroupSuccess1Status">
+            <div id="detailBox">
+
+              <div id="notice"></div>
+              <span style="font-size: 20px;margin-top: 30px;"><i class="fa fa-play fa-fw"></i> 活动信息</span>
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-user-o fa-fw"></i> 活动名字</span>
+                  <input v-model="detail.name" type="text" id="aName" class="form-control" placeholder="活动名字" aria-describedby="inputGroupSuccess1Status">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i> 活动开始时间</span>
-                <input type="text" id="aTime" class="form-control" placeholder="活动开始时间" aria-describedby="inputGroupSuccess1Status">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i> 活动开始时间或地点</span>
+                  <input v-model="detail.startDate" type="text" id="aTime" class="form-control" placeholder="活动开始时间" aria-describedby="inputGroupSuccess1Status">
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i> 问题说明</span>
-                <input type="text" id="helpText" class="form-control" placeholder="问题说明" aria-describedby="inputGroupSuccess1Status">
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i> 问题说明</span>
+                  <input v-model="detail.text" type="text" id="helpText" class="form-control" placeholder="问题说明" aria-describedby="inputGroupSuccess1Status">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
+                  <span class="input-group-addon"><i class="fa fa-question fa-fw"></i> 负责人邮箱</span>
+                  <input v-model="detail.email" type="text" id="userEmail" class="form-control" placeholder="负责人邮箱" aria-describedby="inputGroupSuccess1Status">
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -172,16 +181,14 @@
                 </div>
               </div>
             </div>
-            <div class="form-group">
-              <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-question fa-fw"></i> 负责人邮箱</span>
-                <input type="text" id="userEmail" class="form-control" placeholder="负责人邮箱" aria-describedby="inputGroupSuccess1Status">
-              </div>
+            <div style="text-align: right;padding: 3px 20px 20px 0px">
+              <button type="submit" class="btn btn-danger" onclick="deleteActive()"><i class="fa fa-eraser fa-fw"></i> 删除活动</button>
+              <button type="submit" class="btn btn-success" onclick="editActive()"><i class="fa fa-check fa-fw"></i> 确认修改</button>
             </div>
             <div class="form-group" style="margin-top: 30px;">
               <span style="font-size: 20px;margin-top: 30px;"><i class="fa fa-users fa-fw"></i> 参与人员</span>
 
-              <table id="peopleListTable" class="table table-hover" style="margin-top: 30px;">
+              <table id="manTable" class="table table-hover" style="margin-top: 30px;">
                 <tr style="font-size:17px;">
                   <th>姓名</th>
                   <th>手机</th>
@@ -198,10 +205,9 @@
             </div>
           </div>
           <div style="text-align: right;padding: 3px 20px 20px 0px">
-            <button type="submit" class="btn btn-danger" onclick="joinIn()"><i class="fa fa-eraser fa-fw"></i> 删除活动</button>
-            <button type="submit" class="btn btn-warning" onclick="joinIn()"><i class="fa fa-eraser fa-fw"></i> 清空报名</button>
-            <button type="submit" class="btn btn-success" onclick="joinIn()"><i class="fa fa-download fa-fw"></i> 下载表格</button>
-            <button type="submit" class="btn btn-success" onclick="joinIn()"><i class="fa fa-check fa-fw"></i> 确认修改</button>
+            <button type="submit" class="btn btn-danger" onclick="deleteAllMan()"><i class="fa fa-eraser fa-fw"></i> 清空报名</button>
+            <button type="submit" class="btn btn-success" onclick="getPeople()"><i class="fa fa-retweet fa-fw"></i> 刷新列表</button>
+            <button type="submit" class="btn btn-success" onclick="downloadTable()"><i class="fa fa-download fa-fw"></i> 下载表格</button>
           </div>
         </div>
       </div>
@@ -210,15 +216,15 @@
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.4.2/vue.js"></script>
 <script src="js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
 <script src="js/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 <script src="js/mb.js"></script>
 <script type="text/javascript">
   $('.form_datetime').datetimepicker({
+    pickerPosition: "top-left",
     format: 'yyyy-mm-dd hh:ii:00',
     language: 'zh-CN',
-    startDate: new Date(),
     todayBtn: 1,
     autoclose: 1,
     todayHighlight: 1,
@@ -227,12 +233,27 @@
     MaxView: 4,
     showMeridian: 1
   });
+  var detail = new Vue({
+    el: '#detailBox',
+    data: {
+      detail: {
+        id: 10000,
+        name: '日常训练',
+        class: 'warning',
+        state: '报名中',
+        endDate: '2017-9-1 11:22:00',
+        startDate: '2017-9-2 11:22:00',
+        textDate: '2017-9-2 11:22:00',
+        text: '你想要训练些什么',
+      },
+    }
+  });
   var man = new Vue({
-    el: '#peopleListTable',
+    el: '#manTable',
     data: {
       peoples: [],
     }
-  })
+  });
   var list = new Vue({
     el: '#mylistTable',
     data: {
@@ -241,69 +262,93 @@
         name: '日常训练',
         class: 'warning',
         state: '报名中',
-        email: 'zhenlychen@foxmail.com',
         endDate: '2017-9-1 11:22:00',
         startDate: '2017-9-2 11:22:00',
         text: '你想要训练些什么',
-        peoples: [{
-          name: '铭伯',
-          phone: '12306',
-          text: '我要弹尤克里里',
-        }, {
-          name: '尧哥',
-          phone: '10086',
-          text: '我要弹吉他',
-        }, {
-          name: '杰哥',
-          phone: '10000',
-          text: '我要打王者荣耀',
-        }],
+        actors: 13,
       }, {
         id: 10001,
         name: '球王争霸',
         class: 'warning',
         state: '报名中',
-        email: 'zhenlychen@foxmail.com',
         endDate: '2017-9-4 11:22:00',
         startDate: '2017-9-5 11:22:00',
         text: '你的梦想是什么',
-        peoples: [{
-          name: '铭伯',
-          phone: '12306',
-          text: '我要弹尤克里里',
-        }, {
-          name: '尧哥',
-          phone: '10086',
-          text: '我要弹吉他',
-        }],
+        actors: 13,
       }, {
         id: 10002,
         name: '尧哥请吃饭',
         class: 'danger',
         state: '报名已截止',
-        email: 'zhenlychen@foxmail.com',
         endDate: '2017-7-4 11:22:00',
         startDate: '2017-9-5 11:22:00',
         text: '你的梦想是什么',
-        peoples: [{
-          name: '铭伯',
-          phone: '12306',
-          text: '我要弹尤克里里',
-        }],
+        actors: 13,
       }]
     }
   });
   $(function() {
     $('#myName').html(getCookie('name'));
-    getAllList();
+    getList();
   });
 
-  function deleteMan(e) {
+  function downloadTable() {
+    if (man.peoples.length) {
+      $.post('/api/downloadTable', {
+        id: detail.detail.id
+      }, (data) => {
+        if (data.state == 'ok') {
+          $.get('/api/file/' + data.fileName)
+          document.location = '/api/file/' + data.fileName;
+        }
+      });
+    } else {
+      sendNotice('报名用户为空');
+    }
 
   }
 
-  function getAllList() {
-    $.post('/api/getAllList', {}, (data) => {
+  function deleteMan(e) {
+    man.peoples.splice(e.getAttribute('value'), 1);
+    editMan();
+  }
+
+  function deleteAllMan() {
+    if (confirm('是否确定清空报名列表')) {
+      man.peoples = [];
+      editMan();
+    }
+  }
+
+  function editMan() {
+    $.post('/api/editMan', {
+      id: detail.detail.id,
+      peoples: man.peoples,
+    }, (data) => {
+      if (data.state == 'ok') {
+        sendNotice('删除记录成功');
+      } else {
+        getPeople();
+        sendNotice('删除记录失败，请联系管理员');
+      }
+    });
+  }
+
+  function deleteActive() {
+    if (confirm("你确定删除此活动吗？")) {
+      $.post('/api/deleteActive', {
+        id: detail.detail.id,
+      }, (data) => {
+        if (data.state == 'ok') {
+          getList();
+          $('#myTab a[href="#mylistTable"]').tab('show');
+        }
+      })
+    }
+  }
+
+  function getList() {
+    $.post('/api/getList', {}, (data) => {
       if (data.state == 'ok') {
         list.meetings = data.meetings;
         if (list.meetings.length == 0) {
@@ -368,7 +413,7 @@
       endDate: endDate,
     }, (data) => {
       if (data.state == 'ok') {
-        getAllList();
+        getList();
         $('#addMeet').modal('hide');
       } else {
         sendNoticeIn('创建活动失败，请重新登陆。');
@@ -377,15 +422,65 @@
   }
 
   function setActive(e) {
-    var data = list.meetings[e.getAttribute('value')];
-    $('#activeName').html(data.name);
-    $('#aName').val(data.name);
-    $('#aTime').val(data.startDate);
-    var deadLine = new Date(data.endDate).Format('yyyy-MM-dd hh:mm:ss');
-    $('#deadLine').val(deadLine);
-    $('#userEmail').val(data.email);
-    $('#helpText').val(data.text);
-    man.peoples = data.peoples;
+    detail.detail = list.meetings[e.getAttribute('value')];
+    detail.detail.textDate = new Date(detail.detail.endDate).Format('yyyy-MM-dd hh:mm:ss');
+    $('#deadLine').val(detail.detail.textDate);
+    getPeople();
+  }
+
+  function getPeople() {
+    $.post('/api/getPeople', {
+      id: detail.detail.id,
+    }, (res) => {
+      if (res.state == 'ok') {
+        man.peoples = res.peoples;
+      }
+    });
+  }
+
+  function editActive() {
+    if (detail.detail.meetName == '') {
+      sendNotice('活动名称不能为空');
+      return;
+    }
+    if (detail.detail.textDate == '') {
+      sendNotice('报名截至日期不能为空');
+      return;
+    }
+    if (detail.detail.email == '') {
+      sendNotice('负责人邮箱不能为空');
+      return;
+    }
+    if (detail.detail.text == '') {
+      sendNotice('活动问题不能为空');
+      return;
+    }
+    if (detail.detail.startDate == '') {
+      sendNotice('时间或地点不能为空');
+      return;
+    }
+    var endDate = new Date($('#deadLine').val());
+    if (endDate == 'Invalid Date') {
+      sendNoticeIn('非法时间，请重新选择');
+      $('#deadLine').focus();
+      return;
+    }
+    detail.detail.endDate = endDate;
+    $.post('/api/editActive', {
+      id: detail.detail.id,
+      name: detail.detail.name,
+      text: detail.detail.text,
+      email: detail.detail.email,
+      startDate: detail.detail.startDate,
+      endDate: detail.detail.endDate,
+    }, (data) => {
+      if (data.state == 'ok') {
+        getList();
+        sendNotice('修改信息成功');
+      } else {
+        sendNotice('修改信息失败，请重新登陆');
+      }
+    });
   }
 </script>
 

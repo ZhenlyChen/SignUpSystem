@@ -27,11 +27,15 @@ app.get('/', (req, res) => {
   res.send('Hexo auxiliary system is running');
 });
 
-
+app.use('/file', express.static('./file'));
 app.post('/getList', Meeting.getList);
-app.post('/getAllList', verify.checkToken, Meeting.checkClass, Meeting.getAllList);
+app.post('/postMan', Meeting.checkIp, Meeting.postMan);
+app.post('/getPeople', verify.checkToken, Meeting.checkClass, Meeting.getPeople);
 app.post('/addActive', verify.checkToken, Meeting.checkClass, Meeting.addActive);
-app.post('/postMan', Meeting.postMan);
+app.post('/deleteActive', verify.checkToken, Meeting.checkClass, Meeting.deleteActive);
+app.post('/editActive', verify.checkToken, Meeting.checkClass, Meeting.editActive);
+app.post('/editMan', verify.checkToken, Meeting.checkClass, Meeting.editMan);
+app.post('/downloadTable', verify.checkToken, Meeting.checkClass, Meeting.downloadTable);
 
 app.post('/login', User.login, User.login_send); //用户登录
 app.post('/logout', verify.logout); //退出登陆

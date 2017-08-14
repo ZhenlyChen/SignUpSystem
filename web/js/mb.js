@@ -49,11 +49,17 @@ function getQueryString(name) {
 function sendNotice(str) {
   $('#Alert_').alert('close');
   $('#notice').html('<div id="Alert_" class="alert alert-warning fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><div id="sendToAlert">' + str + '</div></div>');
+  setTimeout(function() {
+    $('#Alert_').alert('close');
+  }, 3000);
 } //页面内通知
 
 function sendNoticeIn(str) {
   $('#Alert_').alert('close');
   $('#notice2').html('<div id="Alert_" class="alert alert-warning fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><div id="sendToAlert">' + str + '</div></div>');
+  setTimeout(function() {
+    $('#Alert_').alert('close');
+  }, 3000);
 } //模态框内通知
 
 function regularTest(pattern, id, send) {

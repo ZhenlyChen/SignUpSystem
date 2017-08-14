@@ -16,7 +16,12 @@ exports.login = (req, res, next) => {
       userDB.findOne({ uid: data.userData.uid }, (err, val) => { //更新用户信息
         res.locals.myData = data.userData;
         res.locals.userClass = 0;
-        if (val === null) {
+        if (val) {
+          val.name = data.userData.name;
+          val.email = data.userData.email;
+          res.locals.userClass = val.class;
+          val.save(() => { next(); });
+        } else {
           db.insertDate(userDB, {
             uid: data.userData.uid,
             token: 0,
@@ -26,11 +31,6 @@ exports.login = (req, res, next) => {
           }, () => {
             next();
           });
-        } else {
-          val.name = data.userData.name;
-          val.email = data.userData.email;
-          res.locals.userClass = val.class;
-          val.save(() => { next(); });
         }
       });
     } else {

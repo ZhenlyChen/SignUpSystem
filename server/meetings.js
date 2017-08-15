@@ -15,6 +15,7 @@ var meetingSchema = db.mb.Schema({
     name: String,
     phone: Number,
     text: String,
+    time: Date,
   }],
 }, { collection: 'meetings' });
 var meetingDB = db.mb.model('meetings', meetingSchema);
@@ -62,7 +63,7 @@ exports.getList = (req, res, next) => {
         actors: data[val].peoples === undefined ? 0 : data[val].peoples.length,
       });
     }
-    res.send({ state: 'ok', meetings: activeList });
+    res.send({ state: 'ok', meetings: activeList, isLogin: verify.getLoginState(req) });
   });
 };
 
@@ -135,6 +136,7 @@ exports.postMan = (req, res, next) => {
         name: req.body.name,
         phone: req.body.phone,
         text: req.body.text,
+        time: req.body.time,
       });
       val.save(() => {});
       res.send({ state: 'ok' });
@@ -193,9 +195,9 @@ exports.downloadTable = (req, res, next) => {
 function makeAFile(id, callback) {
   meetingDB.findById(id, (err, val) => {
     if (val) {
-      var data = '"姓名","联系电话","' + val.text + '"\n';
+      var data = '"报名时间","姓名","联系电话","' + val.text + '"\n';
       for (var i = 0; i < val.peoples.length; i++) {
-        data += '"' + val.peoples[i].name + '","' + val.peoples[i].phone + '","' + val.peoples[i].text + '"\n';
+        data += '"' + val.peoples[i].time + '","' + val.peoples[i].name + '","' + val.peoples[i].phone + '","' + val.peoples[i].text + '"\n';
       }
       var csv = iconv.encode(data, 'GBK'); // 转编码
       fs.writeFile('file/' + id + '.csv', csv, (err) => {

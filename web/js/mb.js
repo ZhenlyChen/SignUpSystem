@@ -33,7 +33,7 @@ function comptime(beginTime, endTime) {
     endTime.substring(10, 19);
   var a = (Date.parse(endTime) - Date.parse(beginTime)) / 3600 / 1000;
   return a;
-}; //进行时间比较
+} //进行时间比较
 //---------------------------------------------------------------------
 function getCookie(name) {
   var arr, reg = new RegExp('(^| )' + name + '=([^;]*)(;|$)');
@@ -43,7 +43,7 @@ function getCookie(name) {
 function getQueryString(name) {
   var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
   var r = window.location.search.substr(1).match(reg);
-  return r != null ? unescape(r[2]) : null;
+  return r !== null ? unescape(r[2]) : null;
 } //获取get参数
 
 function sendNotice(str) {
@@ -74,7 +74,7 @@ function regularTest(pattern, id, send) {
 } //正则匹配
 
 function isNullTest(id, send) {
-  if (document.getElementById(id).value == '') {
+  if (document.getElementById(id).value === '') {
     sendNotice(send);
     $('#' + id).focus();
     return 1;
@@ -105,70 +105,13 @@ function isEqualTest(id1, id2, send, qwq) {
   }
 } //检测相等
 
-
-function getList() {
-  $.post('api/getList', {}, (data) => {
-    illegalTest(data);
-    list.meetings = data.listOfSponsor;
-    list2.meetings = data.listOfParticipate;
-    userList.users = data.users;
-    myNotice.notices = data.notice;
-    setTimeout(() => {
-      $("[data-toggle='tooltip']").tooltip();
-    }, 1000);
-    if (list.meetings.length != 0) {
-      $('#mylistTable').show();
-      $('#nothingS').hide();
-    } else {
-      $('#mylistTable').hide();
-      $('#nothingS').show();
-      $('#nothingS')
-        .html(
-          '<div class="alert alert-warning alert-dismissible" role="alert">你还没有发起任何会议</div>');
-    }
-
-    if (list2.meetings.length != 0) {
-      $('#takelistTable').show();
-      $('#nothingP').hide();
-    } else {
-      $('#takelistTable').hide();
-      $('#nothingP').show();
-      $('#nothingP')
-        .html(
-          '<div class="alert alert-warning alert-dismissible" role="alert">当前没有参与的会议</div>');
-    }
-    var nowTime = new Date().Format('yyyy-MM-dd hh:mm:ss');
-    for (i in list.meetings) {
-      list.meetings[i].class = 'default';
-      list.meetings[i].state = '未开始';
-      if (comptime(nowTime, list.meetings[i].endDate) <= 0) {
-        list.meetings[i].class = 'success';
-        list.meetings[i].state = '已完成';
-      }
-      if (comptime(nowTime, list.meetings[i].startDate) <= 0 &&
-        comptime(nowTime, list.meetings[i].endDate) >= 0) {
-        list.meetings[i].class = 'warning';
-        list.meetings[i].state = '进行中';
-      }
-    }
-    for (i in list2.meetings) {
-      list2.meetings[i].class = 'default';
-      list2.meetings[i].state = '未开始';
-      if (comptime(nowTime, list2.meetings[i].endDate) <= 0) {
-        list2.meetings[i].class = 'success';
-        list2.meetings[i].state = '已完成';
-      }
-      if (comptime(nowTime, list2.meetings[i].startDate) <= 0 &&
-        comptime(nowTime, list2.meetings[i].endDate) >= 0) {
-        list2.meetings[i].class = 'warning';
-        list2.meetings[i].state = '进行中';
-      }
-    }
+function logout() {
+  $.post('/api/logout', {}, (data) => {
+    window.location.href = 'index.html';
   });
 }
 
-function logout() {
-  $.post('/api/logout', {}, () => {
-    window.location.href = 'index.html';
-  });
+function sendNoticeAll(str) {
+  $('#noticeDiv').html('<div id="noticeBox" class="float_div alert alert-warning alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button><p> ' + str + '</p></div>');
+  $('#noticeBox').fadeIn(300);
 }

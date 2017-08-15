@@ -32,12 +32,6 @@
 <body>
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: #f8f8f8;">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-      <span class="sr-only"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
       <a class="navbar-brand" href="admin.html">华农乒协后台管理系统</a>
     </div>
   </nav>
@@ -105,10 +99,11 @@
             </p>
           </div>
           <div class="panel-body" style="padding: 10px;">
-            <a class="btn btn-success btn-block" data-toggle="modal" data-target=".bs-example-modal-lg" onclick="cleanNew()">增加活动</a>
-            <a onclick="getList()" href="#mylistTable" role="tab" data-toggle="tab" class="btn btn-success btn-block">刷新列表</a>
-            <a href="index.html" class="btn btn-warning btn-block">返回主页</a>
-            <a onclick="logout()" class="btn btn-warning btn-block">退出登陆</a>
+            <a class="btn btn-success btn-block" data-toggle="modal" data-target=".bs-example-modal-lg" onclick="cleanNew()"><i class="fa fa-plus fa-fw"></i> 增加活动</a>
+            <a onclick="getList()" href="#mylistTable" role="tab" data-toggle="tab" class="btn btn-success btn-block"><i class="fa fa-retweet fa-fw"></i> 刷新列表</a>
+            <a href="https://my.zhenly.cn" target="_black" class="btn btn-success btn-block"><i class="fa fa-user-md fa-fw"></i> 用户中心</a>
+            <a href="index.html" class="btn btn-warning btn-block"><i class="fa fa-home fa-fw"></i> 返回主页</a>
+            <a onclick="logout()" class="btn btn-warning btn-block"><i class="fa fa-sign-out fa-fw"></i> 退出登陆</a>
           </div>
 
         </div>
@@ -125,7 +120,9 @@
           </div>
           <div class="panel-footer" style="text-align: right;">
             <p style="margin-bottom: 0px;">
-              <a href="#joinInDiv" aria-controls="loginDiv" role="tab" data-toggle="tab" style="margin-left: 10px;" class="btn btn-success" onclick="setActive(this)" :value="index">详情</a>
+              <a href="#joinInDiv" aria-controls="loginDiv" role="tab" data-toggle="tab" style="margin-left: 10px;" class="btn btn-success" onclick="setActive(this)" :value="index">
+                <i class="fa fa-info fa-fw"></i> 详情
+              </a>
             </p>
           </div>
         </div>
@@ -148,32 +145,32 @@
               <span style="font-size: 20px;margin-top: 30px;"><i class="fa fa-play fa-fw"></i> 活动信息</span>
               <div class="form-group">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-user-o fa-fw"></i> 活动名字</span>
-                  <input v-model="detail.name" type="text" id="aName" class="form-control" placeholder="活动名字" aria-describedby="inputGroupSuccess1Status">
+                  <span class="input-group-addon"><i class="fa fa-id-card-o fa-fw"></i> 活动名称</span>
+                  <input v-model="detail.name" type="text" id="aName" class="form-control" placeholder="请输入活动名称" aria-describedby="inputGroupSuccess1Status">
                 </div>
               </div>
               <div class="form-group">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i> 活动开始时间或地点</span>
-                  <input v-model="detail.startDate" type="text" id="aTime" class="form-control" placeholder="活动开始时间" aria-describedby="inputGroupSuccess1Status">
+                  <span class="input-group-addon"><i class="fa fa-clock-o fa-fw"></i> 时间和地点</span>
+                  <input v-model="detail.startDate" type="text" id="aTime" class="form-control" placeholder="请输入活动开始的时间和地点" aria-describedby="inputGroupSuccess1Status">
                 </div>
               </div>
               <div class="form-group">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-phone fa-fw"></i> 问题说明</span>
+                  <span class="input-group-addon"><i class="fa fa-question fa-fw"></i> 问题说明</span>
                   <input v-model="detail.text" type="text" id="helpText" class="form-control" placeholder="问题说明" aria-describedby="inputGroupSuccess1Status">
                 </div>
               </div>
               <div class="form-group">
                 <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-question fa-fw"></i> 负责人邮箱</span>
+                  <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i> 负责人邮箱</span>
                   <input v-model="detail.email" type="text" id="userEmail" class="form-control" placeholder="负责人邮箱" aria-describedby="inputGroupSuccess1Status">
                 </div>
               </div>
             </div>
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-question fa-fw"></i> 报名截至日期</span>
+                <span class="input-group-addon"><i class="fa fa-calendar-o fa-fw"></i> 报名截至日期</span>
                 <div style="padding-top: 0px;" class="input-group date form_datetime col-md-5" data-date-format="dd-MM-yyyy HH:ii:00" data-link-field="dtp_input1">
                   <input id="deadLine" class="form-control" size="16" type="text" value="" readonly>
                   <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
@@ -190,16 +187,21 @@
 
               <table id="manTable" class="table table-hover" style="margin-top: 30px;">
                 <tr style="font-size:17px;">
+                  <th>报名时间</th>
                   <th>姓名</th>
                   <th>手机</th>
                   <th>训练内容</th>
                   <th>操作</th>
                 </tr>
+                <tr v-if="peoples.length == 0">
+                  <td>当前还没有人报名</td>
+                </tr>
                 <tr v-for="(people, index) in peoples" style="font-size:15px;" data-placement="bottom" class="tooltip-test" data-toggle="tooltip">
+                  <td>{{new Date(people.time).Format('yyyy-MM-dd hh:mm:ss')}}</td>
                   <td>{{people.name}}</td>
                   <td>{{people.phone}}</td>
                   <td>{{people.text}}</td>
-                  <td><a class="btn btn-warning" :value="index" onclick="deleteMan(this)">删除</a></td>
+                  <td><a class="btn btn-warning" :value="index" onclick="deleteMan(this)"><i class="fa fa-trash fa-fw"></i></a></td>
                 </tr>
               </table>
             </div>
@@ -259,37 +261,23 @@
     data: {
       meetings: [{
         id: 10000,
-        name: '日常训练',
-        class: 'warning',
-        state: '报名中',
-        endDate: '2017-9-1 11:22:00',
-        startDate: '2017-9-2 11:22:00',
-        text: '你想要训练些什么',
-        actors: 13,
-      }, {
-        id: 10001,
-        name: '球王争霸',
-        class: 'warning',
-        state: '报名中',
-        endDate: '2017-9-4 11:22:00',
-        startDate: '2017-9-5 11:22:00',
-        text: '你的梦想是什么',
-        actors: 13,
-      }, {
-        id: 10002,
-        name: '尧哥请吃饭',
-        class: 'danger',
-        state: '报名已截止',
-        endDate: '2017-7-4 11:22:00',
-        startDate: '2017-9-5 11:22:00',
-        text: '你的梦想是什么',
-        actors: 13,
-      }]
+        name: '列表刷新中...',
+        class: 'success',
+        state: '请稍后',
+        endDate: '等一下呢...',
+        startDate: '很快就能加载完...',
+        text: '',
+        actors: 0,
+      }, ]
     }
   });
   $(function() {
-    $('#myName').html(getCookie('name'));
-    getList();
+    if (getCookie('isLogin') == 'true') {
+      $('#myName').html(getCookie('name'));
+      getList();
+    } else {
+      window.location.href = 'index.html';
+    }
   });
 
   function downloadTable() {
@@ -349,6 +337,9 @@
 
   function getList() {
     $.post('/api/getList', {}, (data) => {
+      if (data.isLogin == false) {
+        logout();
+      }
       if (data.state == 'ok') {
         list.meetings = data.meetings;
         if (list.meetings.length == 0) {
@@ -434,6 +425,11 @@
     }, (res) => {
       if (res.state == 'ok') {
         man.peoples = res.peoples;
+      } else {
+        sendNotice('你的登陆已失效，请重新登陆，3秒后跳转到登陆界面');
+        setTimeout(function() {
+          window.location.href = 'https://my.zhenly.cn/?sid=10001';
+        }, 3000);
       }
     });
   }

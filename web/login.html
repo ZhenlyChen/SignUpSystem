@@ -28,6 +28,11 @@
         } else {
           window.location.href = 'index.html';
         }
+      } else {
+        document.write('登陆失败，请联系管理员');
+        setTimeout(function() {
+          window.location.href = 'https://my.zhenly.cn/?sid=10001'
+        }, 3000);
       }
     })
   });

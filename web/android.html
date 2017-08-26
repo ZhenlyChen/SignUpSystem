@@ -139,7 +139,6 @@
   function postMan(e) {
     if (!regularTest(/^.{1,16}$/, 'userName', '请输入合法的姓名(不超过16位字符)')) return;
     if (!regularTest(/^1[34578]\d{9}$/, 'userPhone', '请输入合法的手机号码')) return;
-    if (!regularTest(/^.{1,30}$/, 'userWander', '请输入详细信息(不超过30位字符)')) return;
     $.post('/api/postMan', {
       id: e.getAttribute('value'),
       name: $('#userName').val(),

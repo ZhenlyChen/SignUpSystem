@@ -44,9 +44,9 @@ exports.post = (path, data, callback) => {
     }
     res.on('data', (d) => {
       if (d.toString('ascii').indexOf('"state":"ok"') != -1) {
-        return callback({ state: 'ok', userData: JSON.parse(d.toString('ascii')) });
+        return callback({ state: 'ok', userData: JSON.parse(d.toString('utf8')) });
       } else {
-        return callback({ state: 'failed', reason: d.toString('ascii') });
+        return callback({ state: 'failed', reason: d.toString('utf8') });
       }
     });
   });

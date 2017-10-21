@@ -16,7 +16,9 @@ var meetingSchema = db.mb.Schema({
     phone: Number,
     text: String,
     time: Date,
+    team: String,
   }],
+  teams: []
 }, { collection: 'meetings' });
 var meetingDB = db.mb.model('meetings', meetingSchema);
 
@@ -52,7 +54,18 @@ schedule.scheduleJob('30 30 * * * *', function() {
 exports.getList = (req, res, next) => {
   meetingDB.find({}, (err, data) => {
     var activeList = [];
-    for (var val in data) {
+    for (let val in data) {
+      let newTeam = data[val].teams;
+      if (newTeam !== undefined) {
+        for (let man of data[val].peoples) {
+          for (let i = 0; i < newTeam.length; i++) {
+            if (newTeam[i].id === man.team) {
+              newTeam[i].actors += 1;
+              break;
+            }
+          }
+        }
+      }
       activeList.push({
         id: data[val]._id,
         name: data[val].name,
@@ -61,6 +74,7 @@ exports.getList = (req, res, next) => {
         startDate: data[val].startDate,
         text: data[val].text,
         actors: data[val].peoples === undefined ? 0 : data[val].peoples.length,
+        teams: (newTeam === undefined) ? [] : newTeam,
       });
     }
     res.send({ state: 'ok', meetings: activeList, isLogin: verify.getLoginState(req) });
@@ -93,6 +107,7 @@ exports.addActive = (req, res, next) => {
     startDate: req.body.startDate,
     text: req.body.text,
     peoples: [],
+    teams: [],
   }, () => {
     res.send({ state: 'ok' });
   });
@@ -129,7 +144,7 @@ exports.checkIp = (req, res, next) => {
   });
 };
 
-exports.postMan = (req, res, next) => {
+exports.postMan = function(req, res, next) {
   meetingDB.findById(req.body.id, (err, val) => {
     if (val) {
       val.peoples.push({
@@ -137,9 +152,19 @@ exports.postMan = (req, res, next) => {
         phone: req.body.phone,
         text: req.body.text,
         time: req.body.time,
+        team: req.body.team,
       });
-      val.save(() => {});
-      res.send({ state: 'ok' });
+      /*       let newTeam = [];
+            for (let i = 0; i < val.teams.length; i++) {
+              newTeam.push(val.teams[i]);
+              if (val.teams[i].id === req.body.team) {
+                newTeam[i].actors++;
+              }
+              console.log(i, '/', val.teams.length)
+            }
+            val.teams = newTeam;
+            console.log(val.teams); */
+      val.save(() => { res.send({ state: 'ok' }); });
     } else {
       res.send({ state: 'failed', reason: 'NO_ID' });
     }
@@ -165,6 +190,7 @@ exports.editActive = (req, res, next) => {
       val.text = req.body.text;
       val.email = req.body.email;
       val.endDate = req.body.endDate;
+      val.teams = req.body.teams;
       val.save(() => {});
       res.send({ state: 'ok' });
     } else {
@@ -195,9 +221,9 @@ exports.downloadTable = (req, res, next) => {
 function makeAFile(id, callback) {
   meetingDB.findById(id, (err, val) => {
     if (val) {
-      var data = '"报名时间","姓名","联系电话","' + val.text + '"\n';
+      var data = '"报名时间","姓名","队伍编号","联系电话","' + val.text + '"\n';
       for (var i = 0; i < val.peoples.length; i++) {
-        data += '"' + val.peoples[i].time + '","' + val.peoples[i].name + '","' + val.peoples[i].phone + '","' + val.peoples[i].text + '"\n';
+        data += '"' + val.peoples[i].time + '","' + val.peoples[i].name + '","' + val.peoples[i].team + '","' + val.peoples[i].phone + '","' + val.peoples[i].text + '"\n';
       }
       var csv = iconv.encode(data, 'GBK'); // 转编码
       fs.writeFile('file/' + id + '.csv', csv, (err) => {
@@ -205,6 +231,64 @@ function makeAFile(id, callback) {
       });
     } else {
       res.send({ state: 'failed', reason: 'NO_ID' });
+    }
+  });
+}
+
+
+exports.addTeam = function(req, res, next) {
+  if (req.body.tid === '0') {
+    res.send({ state: 'failed', reason: 'HAD_ID' });
+    return;
+  }
+  meetingDB.findById(req.body.mid, (err, val) => {
+    if (val) {
+      if (val.teams === undefined) val.teams = [];
+      for (let team of val.teams) {
+        if (team.id === req.body.tid) {
+          res.send({ state: 'failed', reason: 'HAD_ID' });
+          return;
+        }
+      }
+      val.teams.push({
+        id: req.body.tid,
+        man: req.body.man,
+        sex: req.body.sex,
+        type: req.body.type,
+        location: req.body.location,
+        actors: 0,
+      });
+      val.save(() => {});
+      res.send({ state: 'ok' });
+    } else {
+      res.send({ state: 'failed', reason: 'NO_ID' });
+    }
+  });
+}
+
+
+exports.deleteTeam = function(req, res, next) {
+  meetingDB.findById(req.body.mid, (err, val) => {
+    if (val) {
+      if (val.teams === undefined) val.teams = {};
+      let newTeam = [];
+      let hasDelete = false;
+      for (let team of val.teams) {
+        if (team.id === req.body.tid) {
+          hasDelete = true;
+        } else {
+          newTeam.push(team);
+        }
+      }
+      val.teams = newTeam;
+      val.save(() => {});
+      if (hasDelete) {
+        res.send({ state: 'ok' });
+      } else {
+        res.send({ state: 'failed', reason: 'NO_TID' });
+      }
+    } else {
+      res.send({ state: 'failed', reason: 'NO_MID' });
     }
   });
 }

@@ -89,6 +89,46 @@
     </div>
   </div>
 
+  <div id="addTeam" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <fieldset>
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">增加队伍</h4>
+          </div>
+          <div class="modal-body col-md-offset-1 col-md-10">
+            <div id="notice3"></div>
+            <div class="form-group">
+              <label class="control-label">编号:</label>
+              <input class="form-control" placeholder="请输入队伍的编号" v-model="id">
+            </div>
+            <div class="form-group">
+              <label class="control-label">队长名称:</label>
+              <input class="form-control" v-model="man">
+            </div>
+            <div class="form-group">
+              <label class="control-label">队长性别:</label>
+              <input class="form-control" v-model="sex">
+            </div>
+            <div class="form-group">
+              <label class="control-label">队长宿舍区：</label>
+              <input class="form-control" v-model="location">
+            </div>
+            <div class="form-group">
+              <label class="control-label">队长类型：</label>
+              <input class="form-control" placeholder="横拍/直拍" v-model="type">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary" onclick="addTeam(this)" :value="mid">确定</button>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+
   <div class="container-fluid">
     <div class="tab-content">
       <div class="col-md-2" style="padding-top: 3%;">
@@ -99,7 +139,7 @@
             </p>
           </div>
           <div class="panel-body" style="padding: 10px;">
-            <a class="btn btn-success btn-block" data-toggle="modal" data-target=".bs-example-modal-lg" onclick="cleanNew()"><i class="fa fa-plus fa-fw"></i> 增加活动</a>
+            <a class="btn btn-success btn-block" data-toggle="modal" data-target="#addMeet" onclick="cleanNew()"><i class="fa fa-plus fa-fw"></i> 增加活动</a>
             <a onclick="getList()" href="#mylistTable" role="tab" data-toggle="tab" class="btn btn-success btn-block"><i class="fa fa-retweet fa-fw"></i> 刷新列表</a>
             <a href="https://my.zhenly.cn" target="_black" class="btn btn-success btn-block"><i class="fa fa-user-md fa-fw"></i> 用户中心</a>
             <a href="index.html" class="btn btn-warning btn-block"><i class="fa fa-home fa-fw"></i> 返回主页</a>
@@ -163,6 +203,40 @@
               </div>
               <div class="form-group">
                 <div class="input-group">
+                  <p class="input-group-addon"><i class="fa fa-question fa-fw"></i> 队伍设置</p>
+                  <div class="checkbox">
+                    <label>
+                        <input type="checkbox" v-model="checked">开启队伍选择
+                      </label>
+                    <button v-if="checked" style="margin-left: 20px;" :value="detail.id" class="btn btn-success" data-toggle="modal" data-target="#addTeam" onclick="openTeam(this)">添加队伍</button>
+                  </div>
+                  <table id="manTable" class="table table-hover" style="margin-top: 30px;" v-if="checked">
+                    <tr style="font-size:17px;">
+                      <th>编号</th>
+                      <th>队长</th>
+                      <th>性别</th>
+                      <th>类型</th>
+                      <th>宿舍</th>
+                      <th>人数</th>
+                      <th>操作</th>
+                    </tr>
+                    <tr v-if="detail.teams.length == 0">
+                      <td>当前还没有队伍</td>
+                    </tr>
+                    <tr v-for="(team, index) in detail.teams" style="font-size:15px;" data-placement="bottom" class="tooltip-test" data-toggle="tooltip">
+                      <td>{{team.id}}</td>
+                      <td>{{team.man}}</td>
+                      <td>{{team.sex}}</td>
+                      <td>{{team.type}}</td>
+                      <td>{{team.location}}</td>
+                      <td>{{team.actors}}</td>
+                      <td><a class="btn btn-warning" :value="team.id" onclick="deleteTeam(this)"><i class="fa fa-trash fa-fw"></i></a></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i> 负责人邮箱</span>
                   <input v-model="detail.email" type="text" id="userEmail" class="form-control" placeholder="负责人邮箱" aria-describedby="inputGroupSuccess1Status">
                 </div>
@@ -189,6 +263,7 @@
                 <tr style="font-size:17px;">
                   <th>报名时间</th>
                   <th>姓名</th>
+                  <th>队伍</th>
                   <th>手机</th>
                   <th>内容</th>
                   <th>操作</th>
@@ -199,6 +274,7 @@
                 <tr v-for="(people, index) in peoples" style="font-size:15px;" data-placement="bottom" class="tooltip-test" data-toggle="tooltip">
                   <td>{{new Date(people.time).Format('yyyy-MM-dd hh:mm:ss')}}</td>
                   <td>{{people.name}}</td>
+                  <td>{{people.team === undefined ? 0 : people.team}}</td>
                   <td>{{people.phone}}</td>
                   <td>{{people.text}}</td>
                   <td><a class="btn btn-warning" :value="index" onclick="deleteMan(this)"><i class="fa fa-trash fa-fw"></i></a></td>
@@ -218,7 +294,7 @@
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.4.2/vue.js"></script>
 <script src="js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
 <script src="js/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
 <script src="js/mb.js"></script>
@@ -235,9 +311,23 @@
     MaxView: 4,
     showMeridian: 1
   });
+
+  var newTeam = new Vue({
+    el: '#addTeam',
+    data: {
+      man: '',
+      sex: '',
+      type: '',
+      location: '',
+      id: '',
+      mid: '',
+    }
+  })
+
   var detail = new Vue({
     el: '#detailBox',
     data: {
+      checked: true,
       detail: {
         id: 10000,
         name: '日常训练',
@@ -259,16 +349,7 @@
   var list = new Vue({
     el: '#mylistTable',
     data: {
-      meetings: [{
-        id: 10000,
-        name: '列表刷新中...',
-        class: 'success',
-        state: '请稍后',
-        endDate: '等一下呢...',
-        startDate: '很快就能加载完...',
-        text: '',
-        actors: 0,
-      }, ]
+      meetings: []
     }
   });
   $(function() {
@@ -279,6 +360,16 @@
       window.location.href = 'index.html';
     }
   });
+
+
+  function openTeam(e) {
+    newTeam.man = '';
+    newTeam.sex = '';
+    newTeam.type = '';
+    newTeam.location = '';
+    newTeam.id = '';
+    newTeam.mid = e.getAttribute('value');
+  }
 
   function downloadTable() {
     if (man.peoples.length) {
@@ -322,6 +413,27 @@
     });
   }
 
+  function deleteTeam(e) {
+    $.post('/api/deleteTeam', {
+      tid: e.getAttribute('value'),
+      mid: detail.detail.id,
+    }, (data) => {
+      if (data.state == 'ok') {
+        getList(() => {
+          for (let i in list.meetings) {
+            if (list.meetings[i].id === detail.detail.id) {
+              detail.detail = list.meetings[i];
+              break;
+            }
+          }
+        });
+        sendNotice('删除记录成功');
+      } else {
+        sendNotice('删除记录失败，请联系管理员');
+      }
+    });
+  }
+
   function deleteActive() {
     if (confirm("你确定删除此活动吗？")) {
       $.post('/api/deleteActive', {
@@ -335,7 +447,7 @@
     }
   }
 
-  function getList() {
+  function getList(callback) {
     $.post('/api/getList', {}, (data) => {
       if (data.isLogin == false) {
         logout();
@@ -360,11 +472,13 @@
             }
           }
         }
+        if (callback) callback();
       } else {
         window.location.href = 'index.html';
       }
     })
   }
+
 
   function isNull(id, str) {
     if (document.getElementById(id).value == '') {
@@ -412,8 +526,56 @@
     });
   }
 
+  function sendNoticeIn2(str) {
+    $('#Alert_').alert('close');
+    $('#notice3').html('<div id="Alert_" class="alert alert-warning fade in"><a href="#" class="close" data-dismiss="alert">&times;</a><div id="sendToAlert">' + str + '</div></div>');
+    setTimeout(function() {
+      $('#Alert_').alert('close');
+    }, 3000);
+  } //模态框内通知
+
+  function isNullvar(e, text) {
+    if (e === '' || e === undefined || e === null) {
+      sendNoticeIn2(text);
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  function addTeam(e) {
+    if (isNullvar(newTeam.id, '队伍编号不能为空')) return;
+    if (isNullvar(newTeam.man, '队长名字不能为空')) return;
+    if (isNullvar(newTeam.sex, '队长性别不能为空')) return;
+    if (isNullvar(newTeam.type, '队长类型不能为空')) return;
+    if (isNullvar(newTeam.location, '宿舍区域不能为空')) return;
+    $.post('/api/addTeam', {
+      tid: newTeam.id,
+      man: newTeam.man,
+      sex: newTeam.sex,
+      type: newTeam.type,
+      location: newTeam.location,
+      mid: e.getAttribute('value')
+    }, (data) => {
+      if (data.state == 'ok') {
+        getList(() => {
+          for (let i in list.meetings) {
+            if (list.meetings[i].id === e.getAttribute('value')) {
+              detail.detail = list.meetings[i];
+              break;
+            }
+          }
+        });
+        $('#addTeam').modal('hide');
+      } else {
+        sendNoticeIn2('新建队伍失败，或是编号冲突');
+      }
+    });
+  }
+
   function setActive(e) {
     detail.detail = list.meetings[e.getAttribute('value')];
+    detail.checked = detail.detail.teams.length !== 0;
     detail.detail.textDate = new Date(detail.detail.endDate).Format('yyyy-MM-dd hh:mm:ss');
     $('#deadLine').val(detail.detail.textDate);
     getPeople();
@@ -461,6 +623,9 @@
       $('#deadLine').focus();
       return;
     }
+    if (detail.checked === false) {
+      detail.detail.teams = [];
+    }
     detail.detail.endDate = endDate;
     $.post('/api/editActive', {
       id: detail.detail.id,
@@ -469,6 +634,7 @@
       email: detail.detail.email,
       startDate: detail.detail.startDate,
       endDate: detail.detail.endDate,
+      teams: detail.detail.teams,
     }, (data) => {
       if (data.state == 'ok') {
         getList();

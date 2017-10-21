@@ -32,11 +32,11 @@
   <nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: #f8f8f8;">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-      <span class="sr-only"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
+        <span class="sr-only"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
       <a class="navbar-brand" href="index.html">华农乒协训练预约系统</a>
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -44,8 +44,14 @@
 
       </ul>
       <ul class="nav navbar-nav navbar-right" style="padding-right: 30px;">
-        <li><a href="javascript:void(0)" onclick="getList()">刷新列表</a></li>
-        <li><a href="javascript:void(0)" onclick="toAdmin()"><span id="myAdmin">登陆后台</span></a></li>
+        <li>
+          <a href="javascript:void(0)" onclick="getList()">刷新列表</a>
+        </li>
+        <li>
+          <a href="javascript:void(0)" onclick="toAdmin()">
+            <span id="myAdmin">登陆后台</span>
+          </a>
+        </li>
       </ul>
     </div>
   </nav>
@@ -61,11 +67,15 @@
       <div class="col-md-10 col-md-offset-1 active tab-pane fade in" style="padding-top: 3%;" id="mylistTable" role="tabpanel">
         <div class="panel panel-success" v-for="(meeting, index) in meetings">
           <div class="panel-heading">
-            <h2 class="panel-title">{{meeting.name}} <span :class="'label label-' + meeting.class">{{meeting.state}}</span></h2>
+            <h2 class="panel-title">{{meeting.name}}
+              <span :class="'label label-' + meeting.class">{{meeting.state}}</span>
+            </h2>
           </div>
           <div class="panel-body">
-            <p><i class="fa fa-calendar fa-fw" aria-hidden="true"></i> {{meeting.startDate}}</p>
-            <p><i class="fa fa-users fa-fw" aria-hidden="true"></i> 报名人数: {{meeting.actors}}</p>
+            <p>
+              <i class="fa fa-calendar fa-fw" aria-hidden="true"></i> {{meeting.startDate}}</p>
+            <p>
+              <i class="fa fa-users fa-fw" aria-hidden="true"></i> 报名人数: {{meeting.actors}}</p>
           </div>
           <div class="panel-footer" style="text-align: right;" v-if="meeting.class == 'warning' ||meeting.class == 'primary'">
             <p style="margin-bottom: 0px;">报名截至: {{new Date(meeting.endDate).Format('yyyy-MM-dd hh:mm:ss')}}
@@ -85,32 +95,50 @@
       <div class="col-md-10 col-md-offset-1 tab-pane fade in" style="padding-top: 3%;" id="joinInDiv" role="tabpanel">
         <div class="panel panel-success">
           <div class="panel-heading" style="font-size: 17px;">
-            <i href="#mylistTable" aria-controls="loginDiv" role="tab" data-toggle="tab" class="fa fa-arrow-left fa-fw" style="margin-right: 20px;"></i> 报名
+            <i href="#mylistTable" aria-controls="loginDiv" role="tab" data-toggle="tab" class="fa fa-arrow-left fa-fw" style="margin-right: 20px;"></i> {{detail.name}}
             <b id="activeName"></b>
           </div>
           <div class="panel-body">
             <div id="notice"></div>
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-user-o"></i></span>
+                <span class="input-group-addon">
+                  <i class="fa fa-user-o"></i>
+                </span>
                 <input type="text" id="userName" class="form-control" placeholder="名字" aria-describedby="inputGroupSuccess1Status">
               </div>
             </div>
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                <span class="input-group-addon">
+                  <i class="fa fa-phone"></i>
+                </span>
                 <input type="text" id="userPhone" class="form-control" placeholder="手机" aria-describedby="inputGroupSuccess1Status">
               </div>
             </div>
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon"><i class="fa fa-question"></i></span>
-                <input type="text" id="userWander" class="form-control" placeholder="" aria-describedby="inputGroupSuccess1Status">
+                <span class="input-group-addon">
+                  <i class="fa fa-question"></i>
+                </span>
+                <input type="text" id="userWander" class="form-control" :placeholder="detail.text" aria-describedby="inputGroupSuccess1Status">
+              </div>
+            </div>
+          </div>
+          <div style="padding-left: 30px;font-size: 16px;" class="form-group" v-if="detail.teams.length !== 0">
+            <div class="input-group">
+              <p>队伍选择</p>
+              <div class="radio" v-for="(team, index) in detail.teams">
+                <label>
+                  <input type="radio" name="optionsRadios" :id="'optionsRadios' + team.id" :value="team.id" v-model="picked">
+                  {{team.id}} {{team.man}} {{team.sex}} {{team.tyoe}} {{team.location}} 目前已有{{team.actors}}人报名
+                </label>
               </div>
             </div>
           </div>
           <div style="text-align: right;padding: 3px 20px 20px 0px">
-            <button type="submit" class="btn btn-success btn-lg" onclick="postMan(this)" id="postBtn"><i class="fa fa-plus fa-fw"></i> 报名</button>
+            <button type="submit" class="btn btn-success btn-lg" onclick="postMan(this)" id="postBtn" :value="detail.id">
+              <i class="fa fa-plus fa-fw"></i> 报名</button>
           </div>
         </div>
       </div>
@@ -119,9 +147,26 @@
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/vue/2.4.2/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue/2.4.2/vue.js"></script>
 <script src="js/mb.js"></script>
 <script type="text/javascript">
+  var nowList = new Vue({
+    el: '#joinInDiv',
+    data: {
+      detail: {
+        "id": "59e5ebcc0bca1265567ef6c1",
+        "name": "想学球但没加队的同学看这里",
+        "email": "3034747671@qq.com",
+        "endDate": "2017-10-20T03:55:00.000Z",
+        "startDate": "周天下午3点泰山1栋楼下乒乓球室",
+        "text": "性别?宿舍区? 横拍还是直拍？",
+        "actors": 30,
+        class: 'warning',
+        state: '报名中',
+        picked: 0,
+      }
+    }
+  });
   var list = new Vue({
     el: '#mylistTable',
     data: {
@@ -160,11 +205,16 @@
   function postMan(e) {
     if (!regularTest(/^.{1,16}$/, 'userName', '请输入合法的姓名(不超过16位字符)')) return;
     if (!regularTest(/^1[34578]\d{9}$/, 'userPhone', '请输入合法的手机号码')) return;
+    if (nowList.detail.teams !== undefined && nowList.picked === 0) {
+      sendNotice('请选择一只队伍');
+      return;
+    }
     $.post('/api/postMan', {
       id: e.getAttribute('value'),
       name: $('#userName').val(),
       phone: $('#userPhone').val(),
       text: $('#userWander').val() == '' ? '无' : $('#userWander').val(),
+      team: nowList.picked === undefined ? 0 : nowList.picked,
       time: new Date(),
     }, (data) => {
       if (data.state == 'ok') {
@@ -194,9 +244,16 @@
   }
 
   function signIn(e) {
-    $('#activeName').html(list.meetings[e.getAttribute('value')].name);
+
+    nowList.detail = list.meetings[e.getAttribute('value')];
+    nowList.picked = 0;
+    let radios = document.getElementsByName('optionsRadios');
+    for (let i in radios) {
+      radios[i].checked = false
+    }
+    /* $('#activeName').html(list.meetings[e.getAttribute('value')].name);
     $('#userWander').attr('placeholder', list.meetings[e.getAttribute('value')].text);
-    $('#postBtn').attr('value', list.meetings[e.getAttribute('value')].id);
+    $('#postBtn').attr('value', list.meetings[e.getAttribute('value')].id); */
     $('#userName').val('');
     $('#userPhone').val('');
     $('#userWander').val('');
@@ -207,7 +264,7 @@
     $('#noActiveBox').show();
     $.post('/api/getList', {}, (data) => {
       list.meetings = data.meetings;
-      if (list.meetings == undefined) {
+      if (list.meetings.length === 0) {
         $('#noActiveBox').show();
       } else {
         $('#noActiveBox').hide();

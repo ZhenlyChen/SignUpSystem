@@ -37,5 +37,8 @@ app.post('/editActive', verify.checkToken, Meeting.checkClass, Meeting.editActiv
 app.post('/editMan', verify.checkToken, Meeting.checkClass, Meeting.editMan);
 app.post('/downloadTable', verify.checkToken, Meeting.checkClass, Meeting.downloadTable);
 
+app.post('/addTeam', verify.checkToken, Meeting.checkClass, Meeting.addTeam);
+app.post('/deleteTeam', verify.checkToken, Meeting.checkClass, Meeting.deleteTeam);
+
 app.post('/login', User.login, User.login_send); //用户登录
 app.post('/logout', verify.logout); //退出登陆

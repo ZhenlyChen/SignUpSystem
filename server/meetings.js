@@ -56,11 +56,15 @@ exports.getList = (req, res, next) => {
     var activeList = [];
     for (let val in data) {
       let newTeam = data[val].teams;
+      for (let i = 0; i < newTeam.length; i++) {
+        newTeam[i].actors = 0;
+      }
+
       if (newTeam !== undefined) {
         for (let man of data[val].peoples) {
           for (let i = 0; i < newTeam.length; i++) {
             if (newTeam[i].id === man.team) {
-              newTeam[i].actors += 1;
+              newTeam[i].actors = parseInt(newTeam[i].actors) + 1;
               break;
             }
           }

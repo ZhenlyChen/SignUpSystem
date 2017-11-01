@@ -2,15 +2,15 @@
 <html lang="zh-CN">
 
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="theme-color" content="#f8f8f8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="theme-color" content="#f8f8f8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>华农乒协训练预约系统</title>
   <!-- Bootstrap -->
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link href="css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link rel="shortcut icon" href="favicon.ico" />
   <style type="text/css">
     body {
       padding-top: 70px;
@@ -78,7 +78,7 @@
               <i class="fa fa-users fa-fw" aria-hidden="true"></i> 报名人数: {{meeting.actors}}</p>
           </div>
           <div class="panel-footer" style="text-align: right;" v-if="meeting.class == 'warning' ||meeting.class == 'primary'">
-            <p style="margin-bottom: 0px;">报名截至: {{new Date(meeting.endDate).Format('yyyy-MM-dd hh:mm:ss')}}
+            <p style="margin-bottom: 0;">报名截至: {{new Date(meeting.endDate).Format('yyyy-MM-dd hh:mm:ss')}}
               <a id="signInBtn" href="#joinInDiv" aria-controls="loginDiv" role="tab" data-toggle="tab" style="margin-left: 10px;" class="btn btn-success" onclick="signIn(this)" :value="index">
                 <span v-if="meeting.state == '成功报名'">再次报名</span>
                 <span v-else>报名</span>
@@ -105,7 +105,7 @@
                 <span class="input-group-addon">
                   <i class="fa fa-user-o"></i>
                 </span>
-                <input type="text" id="userName" class="form-control" placeholder="名字" aria-describedby="inputGroupSuccess1Status">
+                <input type="text" id="userName" class="form-control" placeholder="名字" aria-describedby="inputGroupSuccess1Status" />
               </div>
             </div>
             <div class="form-group">
@@ -121,7 +121,7 @@
                 <span class="input-group-addon">
                   <i class="fa fa-question"></i>
                 </span>
-                <input type="text" id="userWander" class="form-control" :placeholder="detail.text" aria-describedby="inputGroupSuccess1Status">
+                <input type="text" id="userWander" class="form-control" :placeholder="detail.text" aria-describedby="inputGroupSuccess1Status" />
               </div>
             </div>
           </div>
@@ -130,13 +130,13 @@
               <p>队伍选择</p>
               <div class="radio" v-for="(team, index) in detail.teams">
                 <label>
-                  <input type="radio" name="optionsRadios" :id="'optionsRadios' + team.id" :value="team.id" v-model="picked">
+                  <input type="radio" name="optionsRadios" :id="'optionsRadios' + team.id" :value="team.id" v-model="picked"/>
                   {{team.id}} {{team.man}} {{team.sex}} {{team.tyoe}} {{team.location}} 目前已有{{team.actors}}人报名
                 </label>
               </div>
             </div>
           </div>
-          <div style="text-align: right;padding: 3px 20px 20px 0px">
+          <div style="text-align: right;padding: 3px 20px 20px 0">
             <button type="submit" class="btn btn-success btn-lg" onclick="postMan(this)" id="postBtn" :value="detail.id">
               <i class="fa fa-plus fa-fw"></i> 报名</button>
           </div>

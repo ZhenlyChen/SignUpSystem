@@ -19,14 +19,18 @@ var meetingSchema = db.mb.Schema({
     team: String,
   }],
   teams: []
-}, { collection: 'meetings' });
+}, {
+  collection: 'meetings'
+});
 var meetingDB = db.mb.model('meetings', meetingSchema);
 
 var ipSchema = db.mb.Schema({
   ip: String,
   counts: Number,
   time: Date,
-}, ({ collection: 'ip' }));
+}, ({
+  collection: 'ip'
+}));
 var ipDB = db.mb.model('ip', ipSchema);
 
 schedule.scheduleJob('30 30 * * * *', function() {
@@ -81,16 +85,28 @@ exports.getList = (req, res, next) => {
         teams: (newTeam === undefined) ? [] : newTeam,
       });
     }
-    res.send({ state: 'ok', meetings: activeList, isLogin: verify.getLoginState(req) });
+    res.send({
+      state: 'ok',
+      meetings: activeList,
+      isLogin: verify.getLoginState(req)
+    });
   });
 };
 
 exports.getPeople = (req, res, next) => {
-  meetingDB.findOne({ _id: req.body.id }, (err, val) => {
+  meetingDB.findOne({
+    _id: req.body.id
+  }, (err, val) => {
     if (val) {
-      res.send({ state: 'ok', peoples: val.peoples });
+      res.send({
+        state: 'ok',
+        peoples: val.peoples
+      });
     } else {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     }
   });
 };
@@ -98,7 +114,10 @@ exports.checkClass = (req, res, next) => {
   if (verify.getUserData(res).class == 1) {
     next();
   } else {
-    res.send({ state: 'failed', reason: 'NO_CLASS' });
+    res.send({
+      state: 'failed',
+      reason: 'NO_CLASS'
+    });
     next('route');
   }
 };
@@ -113,19 +132,26 @@ exports.addActive = (req, res, next) => {
     peoples: [],
     teams: [],
   }, () => {
-    res.send({ state: 'ok' });
+    res.send({
+      state: 'ok'
+    });
   });
 };
 
 exports.checkIp = (req, res, next) => {
-  ipDB.findOne({ ip: req.header('x-forwarded-for') }, (err, val) => {
+  ipDB.findOne({
+    ip: req.header('x-forwarded-for')
+  }, (err, val) => {
     var now = new Date();
     if (val) {
       if (now - val.time.getTime() < 360000) {
         val.counts++;
         val.save(() => {});
         if (val.counts > 4) {
-          res.send({ state: 'failed', reason: 'IP_LIMIT' });
+          res.send({
+            state: 'failed',
+            reason: 'IP_LIMIT'
+          });
           next('route');
         } else {
           next();
@@ -168,20 +194,34 @@ exports.postMan = function(req, res, next) {
             }
             val.teams = newTeam;
             console.log(val.teams); */
-      val.save(() => { res.send({ state: 'ok' }); });
+      val.save(() => {
+        res.send({
+          state: 'ok'
+        });
+      });
     } else {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     }
   });
 };
 
 
 exports.deleteActive = (req, res, next) => {
-  meetingDB.remove({ _id: req.body.id }, (err) => {
+  meetingDB.remove({
+    _id: req.body.id
+  }, (err) => {
     if (err) {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     } else {
-      res.send({ state: 'ok' });
+      res.send({
+        state: 'ok'
+      });
     }
   });
 };
@@ -196,9 +236,14 @@ exports.editActive = (req, res, next) => {
       val.endDate = req.body.endDate;
       val.teams = req.body.teams;
       val.save(() => {});
-      res.send({ state: 'ok' });
+      res.send({
+        state: 'ok'
+      });
     } else {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     }
   });
 };
@@ -208,9 +253,14 @@ exports.editMan = (req, res, next) => {
     if (val) {
       val.peoples = req.body.peoples;
       val.save(() => {});
-      res.send({ state: 'ok' });
+      res.send({
+        state: 'ok'
+      });
     } else {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     }
   });
 };
@@ -218,7 +268,10 @@ exports.editMan = (req, res, next) => {
 
 exports.downloadTable = (req, res, next) => {
   makeAFile(req.body.id, () => {
-    res.send({ state: 'ok', fileName: req.body.id + '.csv' });
+    res.send({
+      state: 'ok',
+      fileName: req.body.id + '.csv'
+    });
   });
 };
 
@@ -234,7 +287,10 @@ function makeAFile(id, callback) {
         callback();
       });
     } else {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     }
   });
 }
@@ -242,7 +298,10 @@ function makeAFile(id, callback) {
 
 exports.addTeam = function(req, res, next) {
   if (req.body.tid === '0') {
-    res.send({ state: 'failed', reason: 'HAD_ID' });
+    res.send({
+      state: 'failed',
+      reason: 'HAD_ID'
+    });
     return;
   }
   meetingDB.findById(req.body.mid, (err, val) => {
@@ -250,7 +309,10 @@ exports.addTeam = function(req, res, next) {
       if (val.teams === undefined) val.teams = [];
       for (let team of val.teams) {
         if (team.id === req.body.tid) {
-          res.send({ state: 'failed', reason: 'HAD_ID' });
+          res.send({
+            state: 'failed',
+            reason: 'HAD_ID'
+          });
           return;
         }
       }
@@ -263,9 +325,14 @@ exports.addTeam = function(req, res, next) {
         actors: 0,
       });
       val.save(() => {});
-      res.send({ state: 'ok' });
+      res.send({
+        state: 'ok'
+      });
     } else {
-      res.send({ state: 'failed', reason: 'NO_ID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_ID'
+      });
     }
   });
 }
@@ -287,12 +354,20 @@ exports.deleteTeam = function(req, res, next) {
       val.teams = newTeam;
       val.save(() => {});
       if (hasDelete) {
-        res.send({ state: 'ok' });
+        res.send({
+          state: 'ok'
+        });
       } else {
-        res.send({ state: 'failed', reason: 'NO_TID' });
+        res.send({
+          state: 'failed',
+          reason: 'NO_TID'
+        });
       }
     } else {
-      res.send({ state: 'failed', reason: 'NO_MID' });
+      res.send({
+        state: 'failed',
+        reason: 'NO_MID'
+      });
     }
   });
 }
